@@ -1,7 +1,15 @@
 # Swift Microservices
 
-Packages for building gRPC microservices in Swift with Hummingbird, Vapor, PostgresNIO, and
-grpc-swift. Each package is one dependency set, named for what it does, and consumed by tag.
+Packages for running Swift services: microservices or a monolith, over gRPC, HTTP, or both.
+They sit on the server ecosystem as it is, grpc-swift 2, Hummingbird, Vapor, PostgresNIO,
+swift-service-context, and add the pieces every service needs and none of those frameworks
+provides: a transaction boundary that hands a unit of work its repositories, and a caller
+proved by a credential and carried with the call.
+
+Each package is one dependency set, named for what it does, and consumed by tag. A service links
+only what it uses: a gRPC service links the interceptors and never Hummingbird; an HTTP monolith
+links a middleware and never grpc-swift; a domain target links the two core packages and no
+framework at all.
 
 ## Packages
 
@@ -12,7 +20,7 @@ grpc-swift. Each package is one dependency set, named for what it does, and cons
 | [swift-authentication](https://github.com/swift-microservices/swift-authentication) | `Authenticator`, `Principal`, `PrincipalKey`: who is calling, proved by a credential and carried with the call | swift-service-context |
 | [swift-authentication-jwt](https://github.com/swift-microservices/swift-authentication-jwt) | `JWTIssuer`, `JWTAuthenticator`: a bearer token as a JSON Web Token | jwt-kit |
 | [swift-authentication-x509](https://github.com/swift-microservices/swift-authentication-x509) | `SPIFFEAuthenticator`: a peer by the SPIFFE name in its certificate | swift-certificates |
-| [swift-authentication-grpc](https://github.com/swift-microservices/swift-authentication-grpc) | interceptors that bind a bearer token or the peer certificate, and present the token onward | grpc-swift-2, grpc-swift-nio-transport |
+| [swift-authentication-grpc](https://github.com/swift-microservices/swift-authentication-grpc) | interceptors that bind a bearer token or the peer certificate, and present the token onward | grpc-swift 2 (grpc-swift-2, grpc-swift-nio-transport) |
 | [swift-authentication-hummingbird](https://github.com/swift-microservices/swift-authentication-hummingbird) | the bearer middleware for Hummingbird | hummingbird-auth |
 | [swift-authentication-vapor](https://github.com/swift-microservices/swift-authentication-vapor) | the bearer middleware for Vapor 4 | vapor |
 
@@ -26,7 +34,9 @@ The Postgres driver applies `PostgresSettings` to each transaction, read from th
 **Authentication** is one shape with two proofs and three transports. An `Authenticator` turns a
 credential into an identity, declines with `nil`, or refuses by throwing. jwt and x509 are the
 proofs. grpc, hummingbird, and vapor read the credential off the call and bind the result as a
-`Principal` in the `ServiceContext` for the length of the call. Nothing is named by who
+`Principal` in the `ServiceContext` for the length of the call. A service that speaks both
+gRPC and HTTP uses two of them with the same authenticator, and the same principal reaches its
+handlers either way. Nothing is named by who
 presented a credential: a token proves a payload, and whether that is a person or a process is a
 claim the application reads.
 

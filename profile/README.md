@@ -63,6 +63,30 @@ session through `states()`.
 - Every public declaration has a doc comment, every package has one design article, and every
   behaviour a package promises has a test.
 
+## Foundation
+
+We follow [Swift Foundation's direction](https://forums.swift.org/t/swift-foundation-now-available/73530)
+toward modern Swift APIs and focused modules. Use the standard library when it suffices, and
+import and link `FoundationEssentials` when Foundation types are needed. Never introduce legacy
+Foundation APIs in new or changed code: use modern format styles and parse strategies instead
+of formatter-based date decoding or printf-style formatting. ISO 8601 styles are available in
+Essentials; localized formatting may require `FoundationInternationalization` and ICU.
+
+Check the latest compatible dependency releases, APIs, and trait defaults before choosing
+versions. Some libraries retain a default-enabled `FullFoundation` trait for compatibility
+with users of legacy APIs. Hummingbird 2.27.0 and swift-openapi-runtime 1.12.1 are examples:
+use `traits: []` when no optional features are needed, or explicitly select only needed traits
+such as Hummingbird's `ConfigurationSupport`. Defaults and trait names vary, and another
+dependency can enable the trait again, so verify the complete resolved graph.
+
+An application may still link full Foundation through widely used server libraries. At our
+2026-09-27 audit, Vapor 4.122.2 and PostgresNIO 1.33.1 still required it. Recheck upstream
+releases rather than treating that as permanent; keep our code on modern Essentials APIs
+even while that requirement remains. Libraries that can avoid full Foundation enforce it
+with a separate Linux linking CI check; static SDK success alone does not prove its absence.
+See the skills' [dependency and trait guidance](https://github.com/swift-microservices/skills/blob/main/skills/building-swift-services/references/service-package.md#foundation-dependencies-and-traits)
+and [API policy](https://github.com/swift-microservices/skills/blob/main/skills/building-swift-services/references/swift-style.md#foundation-and-modern-apis).
+
 ## Contributing
 
 Pull requests are welcome on any package. Keep a change focused, prove new behaviour with a

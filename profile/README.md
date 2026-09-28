@@ -21,8 +21,8 @@ framework at all.
 | [swift-persistence-postgres](https://github.com/swift-microservices/swift-persistence-postgres) | `PostgresDatabase` over a PostgresNIO pool, with per-transaction settings for row-level security | postgres-nio, swift-service-context |
 | [swift-authentication](https://github.com/swift-microservices/swift-authentication) | `Authenticator`, `Principal`, `PrincipalKey`: who is calling, proved by a credential and carried with the call | swift-service-context |
 | [swift-authentication-jwt](https://github.com/swift-microservices/swift-authentication-jwt) | `JWTIssuer`, `JWTAuthenticator`: a bearer token as a JSON Web Token | jwt-kit |
-| [swift-authentication-x509](https://github.com/swift-microservices/swift-authentication-x509) | `SPIFFEAuthenticator`: a peer by the SPIFFE name in its certificate | swift-certificates |
-| [swift-authentication-grpc](https://github.com/swift-microservices/swift-authentication-grpc) | interceptors that bind a bearer token or the peer certificate, and present the token onward | grpc-swift 2 (grpc-swift-2, grpc-swift-nio-transport) |
+| [swift-authentication-spiffe](https://github.com/swift-microservices/swift-authentication-spiffe) | `AuthenticationSPIFFE`: validated SPIFFE IDs, explicit trust-domain bundles, and full X.509-SVID chain verification | swift-certificates |
+| [swift-authentication-grpc](https://github.com/swift-microservices/swift-authentication-grpc) | bearer interceptors and propagation; `AuthenticationSPIFFEGRPC` for mutual TLS, exact peer matching, principal binding, and atomic credential updates; generic certificate interception | grpc-swift 2 (grpc-swift-2, grpc-swift-nio-transport), swift-authentication-spiffe |
 | [swift-authentication-hummingbird](https://github.com/swift-microservices/swift-authentication-hummingbird) | the bearer middleware for Hummingbird | hummingbird-auth |
 | [swift-authentication-vapor](https://github.com/swift-microservices/swift-authentication-vapor) | the bearer middleware for Vapor 4 | vapor |
 | [swift-openapi-token-authentication](https://github.com/swift-microservices/swift-openapi-token-authentication) | `AuthenticationSession` and `AuthenticationMiddleware`: shared token authentication, refresh, and a single retry for rejected requests | swift-openapi-runtime, swift-http-types |
@@ -35,13 +35,29 @@ The Postgres driver applies `PostgresSettings` to each transaction, read from th
 `ServiceContext`, which is how a caller reaches row-level security policies.
 
 **Authentication** is one shape with two proofs and three transports. An `Authenticator` turns a
-credential into an identity, declines with `nil`, or refuses by throwing. jwt and x509 are the
-proofs. grpc, hummingbird, and vapor read the credential off the call and bind the result as a
+credential into an identity, declines with `nil`, or refuses by throwing. JWT and SPIFFE are the
+proofs. gRPC, Hummingbird, and Vapor read the credential off the call and bind the result as a
 `Principal` in the `ServiceContext` for the length of the call. A service that speaks both
 gRPC and HTTP uses two of them with the same authenticator, and the same principal reaches its
 handlers either way. Nothing is named by who
 presented a credential: a token proves a payload, and whether that is a person or a process is a
 claim the application reads.
+
+For **SPIFFE workload authentication**, use `swift-authentication-spiffe` from `0.2.0` and
+the `AuthenticationSPIFFEGRPC` product in `swift-authentication-grpc` from `0.3.0`.
+`SPIFFEAuthenticator` verifies the complete X.509-SVID chain against an explicit trust-domain
+bundle; TLS proves possession of the peer's private key. Share one `SPIFFETransportSecurity`
+between the transport and `SPIFFEAuthenticationInterceptor`, and configure each client with
+the exact expected server SPIFFE ID. Invalid peers are refused. Use cases authorize operations
+against the full verified identity, including its trust domain.
+
+An external identity provider owns attestation and supplies coherent, short-lived certificate,
+key, and bundle updates. The gRPC adapter validates and installs updates atomically and exposes
+readiness. The application owns the provider's lifecycle, renewal alerts, RPC deadlines, and
+draining or closing active streams and outgoing connections when revocation requires it.
+See the [gRPC setup and lifecycle guide](https://github.com/swift-microservices/swift-authentication-grpc#spiffe-workload-authentication)
+and the skills' [SPIFFE guidance](https://github.com/swift-microservices/skills/blob/main/skills/building-swift-services/references/spiffe.md)
+for adoption details.
 
 The server-side authentication and persistence packages meet in `ServiceContext`, the task-local
 the server ecosystem already shares, so a caller's identity and its database settings flow

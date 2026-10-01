@@ -21,8 +21,7 @@ framework at all.
 | [swift-persistence-postgres](https://github.com/swift-microservices/swift-persistence-postgres) | `PostgresDatabase` over a PostgresNIO pool, with per-transaction settings for row-level security | postgres-nio, swift-service-context |
 | [swift-authentication](https://github.com/swift-microservices/swift-authentication) | `Authenticator`, `Principal`, `PrincipalKey`: who is calling, proved by a credential and carried with the call | swift-service-context |
 | [swift-authentication-jwt](https://github.com/swift-microservices/swift-authentication-jwt) | `JWTIssuer`, `JWTAuthenticator`: a bearer token as a JSON Web Token | jwt-kit |
-| [swift-authentication-x509](https://github.com/swift-microservices/swift-authentication-x509) | `SPIFFEAuthenticator`: a peer by the SPIFFE name in its certificate | swift-certificates |
-| [swift-authentication-grpc](https://github.com/swift-microservices/swift-authentication-grpc) | interceptors that bind a bearer token or the peer certificate, and present the token onward | grpc-swift 2 (grpc-swift-2, grpc-swift-nio-transport) |
+| [swift-authentication-grpc](https://github.com/swift-microservices/swift-authentication-grpc) | user bearer authentication and propagation on user RPC descriptors | grpc-swift 2 (grpc-swift-2, grpc-swift-nio-transport) |
 | [swift-authentication-hummingbird](https://github.com/swift-microservices/swift-authentication-hummingbird) | the bearer middleware for Hummingbird | hummingbird-auth |
 | [swift-authentication-vapor](https://github.com/swift-microservices/swift-authentication-vapor) | the bearer middleware for Vapor 4 | vapor |
 | [swift-openapi-token-authentication](https://github.com/swift-microservices/swift-openapi-token-authentication) | `AuthenticationSession` and `AuthenticationMiddleware`: shared token authentication, refresh, and a single retry for rejected requests | swift-openapi-runtime, swift-http-types |
@@ -34,18 +33,27 @@ and takes `any Database` over it; the driver hands the scope to the work inside 
 The Postgres driver applies `PostgresSettings` to each transaction, read from the task's
 `ServiceContext`, which is how a caller reaches row-level security policies.
 
-**Authentication** is one shape with two proofs and three transports. An `Authenticator` turns a
-credential into an identity, declines with `nil`, or refuses by throwing. jwt and x509 are the
-proofs. grpc, hummingbird, and vapor read the credential off the call and bind the result as a
-`Principal` in the `ServiceContext` for the length of the call. A service that speaks both
-gRPC and HTTP uses two of them with the same authenticator, and the same principal reaches its
-handlers either way. Nothing is named by who
-presented a credential: a token proves a payload, and whether that is a person or a process is a
-claim the application reads.
+**Security** uses mTLS for service-to-service connections, including gateway upstreams,
+worker clients, and Temporal. Backend listeners require client certificates from explicit CA
+roots; clients verify server certificates and destination hostnames. Keep listeners private
+and gateway routes limited to their intended public and user operations.
 
-The server-side authentication and persistence packages meet in `ServiceContext`, the task-local
-the server ecosystem already shares, so a caller's identity and its database settings flow
-together from the transport to the repository.
+JWTs authenticate users making these calls. `Authenticator.authenticate(_:)` returns a concrete
+identity or throws, and the transport binds a `Principal` in `ServiceContext`. Each receiving
+service verifies the original JWT. Apply bearer authentication and propagation to user RPC
+descriptors, and authorize users in the owning use case. User-scoped database settings preserve
+tenant isolation on this pathway.
+
+Use separate public, user, and internal protobuf descriptors. Public operations validate their
+required credentials or proofs. Every peer admitted by an internal listener's CA trust can call
+its internal RPCs; those operations accept business input and enforce domain invariants.
+Workers call their own Core operations locally and other services through internal RPCs.
+
+**Certificate lifecycle** combines deployment-managed renewal with a primed
+`TimedCertificateReloader` running alongside transports in `ServiceGroup`. New handshakes use
+refreshed material; connection age and graceful draining bound existing sessions. Monitor
+renewal and expiry, and rotate trust roots with overlap and a tested transport rebuild or
+restart. See the [gRPC certificate renewal guide](https://github.com/swift-microservices/swift-authentication-grpc/blob/main/Sources/AuthenticationGRPC/Documentation.docc/Articles/MutualTLSAndCertificateRenewal.md).
 
 **OpenAPI token authentication** handles the client side independently. An `AuthenticationSession`
 actor stores credentials and shares in-flight login and refresh work. `AuthenticationMiddleware`

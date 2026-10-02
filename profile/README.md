@@ -21,7 +21,7 @@ framework at all.
 | [swift-persistence-postgres](https://github.com/swift-microservices/swift-persistence-postgres) | `PostgresDatabase` over a PostgresNIO pool, with per-transaction settings for row-level security | postgres-nio, swift-service-context |
 | [swift-authentication](https://github.com/swift-microservices/swift-authentication) | `Authenticator`, `Principal`, `PrincipalKey`: who is calling, proved by a credential and carried with the call | swift-service-context |
 | [swift-authentication-jwt](https://github.com/swift-microservices/swift-authentication-jwt) | `JWTIssuer`, `JWTAuthenticator`: a bearer token as a JSON Web Token | jwt-kit |
-| [swift-authentication-grpc](https://github.com/swift-microservices/swift-authentication-grpc) | user bearer authentication and propagation on user RPC descriptors | grpc-swift 2 (grpc-swift-2, grpc-swift-nio-transport) |
+| [swift-authentication-grpc](https://github.com/swift-microservices/swift-authentication-grpc) | user bearer authentication and propagation on user RPC descriptors | grpc-swift-2 |
 | [swift-authentication-hummingbird](https://github.com/swift-microservices/swift-authentication-hummingbird) | the bearer middleware for Hummingbird | hummingbird-auth |
 | [swift-authentication-vapor](https://github.com/swift-microservices/swift-authentication-vapor) | the bearer middleware for Vapor 4 | vapor |
 | [swift-openapi-token-authentication](https://github.com/swift-microservices/swift-openapi-token-authentication) | `AuthenticationSession` and `AuthenticationMiddleware`: shared token authentication, refresh, and a single retry for rejected requests | swift-openapi-runtime, swift-http-types |
@@ -50,7 +50,7 @@ its internal RPCs; those operations accept business input and enforce domain inv
 Workers call their own Core operations locally and other services through internal RPCs.
 
 **Certificate lifecycle** combines deployment-managed renewal with a primed
-`TimedCertificateReloader` running alongside transports in `ServiceGroup`. New handshakes use
+`TimedCertificateReloader` from `NIOCertificateReloading` running alongside transports in `ServiceGroup`. New handshakes use
 refreshed material; connection age and graceful draining bound existing sessions. Monitor
 renewal and expiry, and rotate trust roots with overlap and a tested transport rebuild or
 restart. See the [gRPC certificate renewal guide](https://github.com/swift-microservices/swift-authentication-grpc/blob/main/Sources/AuthenticationGRPC/Documentation.docc/Articles/MutualTLSAndCertificateRenewal.md).

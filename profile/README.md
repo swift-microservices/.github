@@ -15,6 +15,7 @@ authentication abstractions for domain code.
 
 | Package | What it offers | Built on |
 | --- | --- | --- |
+| [swift-operation-context](https://github.com/swift-microservices/swift-operation-context) | Typed, task-scoped propagation of identity, credentials, and other operation values | Swift standard library |
 | [swift-persistence](https://github.com/swift-microservices/swift-persistence) | Transaction boundaries that give each unit of work the repositories it needs | Swift standard library |
 | [swift-persistence-postgres](https://github.com/swift-microservices/swift-persistence-postgres) | PostgreSQL transactions with per-transaction settings for row-level security | postgres-nio, swift-service-context |
 | [swift-authentication](https://github.com/swift-microservices/swift-authentication) | Credential authentication and caller identity carried with the call | swift-service-context |
@@ -25,6 +26,11 @@ authentication abstractions for domain code.
 | [swift-openapi-token-authentication](https://github.com/swift-microservices/swift-openapi-token-authentication) | Shared token sessions, automatic refresh, and retry for OpenAPI clients | swift-openapi-runtime, swift-http-types |
 
 ## How they fit
+
+**Operation context** provides a shared container for library-owned, type-safe values. Scoped
+bindings propagate through Swift structured concurrency, allowing child tasks to inherit an
+operation's context. Libraries define their own keys and remain responsible for authentication,
+authorization, and applying database settings.
 
 **Persistence** keeps use cases independent of the database driver. A use case declares the
 repository scope it needs, and the driver supplies those repositories inside a transaction.

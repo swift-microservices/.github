@@ -3,7 +3,7 @@
 Packages for running Swift services and calling APIs: microservices or a monolith, over gRPC,
 HTTP, or both.
 
-They build on grpc-swift 2, Hummingbird, Vapor, PostgresNIO, and swift-service-context to provide
+They build on grpc-swift 2, Hummingbird, Vapor, PostgresNIO, and swift-operation-context to provide
 transaction boundaries, credential authentication, and caller identity carried with each call.
 For generated OpenAPI clients, they also provide shared token authentication and automatic refresh.
 
@@ -17,8 +17,8 @@ authentication abstractions for domain code.
 | --- | --- | --- |
 | [swift-operation-context](https://github.com/swift-microservices/swift-operation-context) | Typed, task-scoped propagation of identity, credentials, and other operation values | Swift standard library |
 | [swift-persistence](https://github.com/swift-microservices/swift-persistence) | Transaction boundaries that give each unit of work the repositories it needs | Swift standard library |
-| [swift-persistence-postgres](https://github.com/swift-microservices/swift-persistence-postgres) | PostgreSQL transactions with per-transaction settings for row-level security | postgres-nio, swift-service-context |
-| [swift-authentication](https://github.com/swift-microservices/swift-authentication) | Credential authentication and caller identity carried with the call | swift-service-context |
+| [swift-persistence-postgres](https://github.com/swift-microservices/swift-persistence-postgres) | PostgreSQL transactions with per-transaction settings for row-level security | postgres-nio, swift-operation-context |
+| [swift-authentication](https://github.com/swift-microservices/swift-authentication) | Credential authentication and caller identity carried with the call | swift-operation-context |
 | [swift-authentication-jwt](https://github.com/swift-microservices/swift-authentication-jwt) | JWT issuance and verification | jwt-kit |
 | [swift-authentication-grpc](https://github.com/swift-microservices/swift-authentication-grpc) | User bearer authentication and token propagation for gRPC | grpc-swift-2 |
 | [swift-authentication-hummingbird](https://github.com/swift-microservices/swift-authentication-hummingbird) | Authentication middleware for Hummingbird | hummingbird-auth |

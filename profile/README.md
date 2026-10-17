@@ -52,11 +52,22 @@ operations rely on trusted service peers while enforcing domain invariants.
 requests. Middleware adds bearer tokens and can refresh and retry a rejected request once when
 its body can be replayed. Applications supply their API's login and refresh implementation.
 
+## CI and delivery
+
+Packages call [swiftlang/github-workflows](https://github.com/swiftlang/github-workflows) directly
+for soundness and tests; swift-persistence-postgres runs its tests beside its own PostgreSQL
+service. [ci](https://github.com/swift-microservices/ci) adds only what swiftlang does not do:
+testing a package whose dependencies include private repositories, building and publishing one image
+per commit, and deploying it to Dokploy by digest, to staging on every push to `main` and to
+production by hand for a commit staging ran.
+
 ## Conventions
 
 - Modern Swift, strict concurrency, and Linux support, including the static Linux SDK.
 - Focused packages keep database drivers, token libraries, and transport frameworks out of domain code.
 - Tagged releases give consumers versioned dependencies.
+- CI tests every package on Swift 6.3, 6.4, and the nightly snapshots, with every workflow and
+  action pinned by commit.
 - Public APIs have documentation, and tests cover the behavior each package promises.
 
 ## Skills

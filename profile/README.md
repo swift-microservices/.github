@@ -62,6 +62,16 @@ durable Temporal workflows. Ask for a plan, a service, an endpoint, or a review,
 answers with the same architecture, names, and code style every time. Its README covers
 installation.
 
+## Building an app
+
+[swiftui-architect](https://github.com/swift-microservices/swiftui-architect-skill) is an agent
+skill that teaches coding agents to design, build, and review modular SwiftUI apps: one Swift
+package per feature, split into domain, UI, and live-service targets whose boundaries the compiler
+enforces, `@Observable` view models under Swift 6 strict concurrency, and native `NavigationStack`
+navigation between features that never import each other. Ask for a feature, a screen, a link
+between two features, a move into packages, or a review, and the agent answers with the same
+structure, names, and shapes every time. Its README covers installation.
+
 ## CI and delivery
 
 Every repository's CI calls [ci](https://github.com/swift-microservices/ci), pinned by commit, and

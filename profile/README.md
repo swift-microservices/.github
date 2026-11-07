@@ -5,7 +5,8 @@ HTTP, or both.
 
 They build on grpc-swift 2, Hummingbird, Vapor, PostgresNIO, and swift-operation-context to provide
 transaction boundaries, credential authentication, and caller identity carried with each call.
-For generated OpenAPI clients, they also provide shared token authentication and automatic refresh.
+For API clients, they also provide token authentication with automatic refresh, including a
+middleware for generated OpenAPI clients.
 
 Each package has a focused dependency set. A service links only what it uses: gRPC interceptors
 for a gRPC service, HTTP middleware for an HTTP application, and the core persistence and
@@ -23,7 +24,7 @@ authentication abstractions for domain code.
 | [swift-authentication-grpc](https://github.com/swift-microservices/swift-authentication-grpc) | User bearer authentication and token propagation for gRPC | grpc-swift-2 |
 | [swift-authentication-hummingbird](https://github.com/swift-microservices/swift-authentication-hummingbird) | Authentication middleware for Hummingbird | hummingbird-auth |
 | [swift-authentication-vapor](https://github.com/swift-microservices/swift-authentication-vapor) | Authentication middleware for Vapor | vapor |
-| [swift-openapi-token-authentication](https://github.com/swift-microservices/swift-openapi-token-authentication) | Shared token sessions, automatic refresh, and retry for OpenAPI clients | swift-openapi-runtime, swift-http-types |
+| [swift-token-authentication](https://github.com/swift-microservices/swift-token-authentication) | Shared token sessions, automatic refresh, and retry for API clients, with an OpenAPI client middleware | Swift standard library; swift-openapi-runtime and swift-http-types with its `OpenAPIRuntime` trait |
 
 ## How they fit
 
@@ -48,9 +49,10 @@ Separate public, user, and internal RPCs keep those boundaries clear: public ope
 their required credentials or proofs, user operations authenticate the caller, and internal
 operations rely on trusted service peers while enforcing domain invariants.
 
-**OpenAPI clients** share authentication state and in-flight login and refresh work across
-requests. Middleware adds bearer tokens and can refresh and retry a rejected request once when
-its body can be replayed. Applications supply their API's login and refresh implementation.
+**API clients** share authentication state and in-flight sign-in and refresh work across
+requests. Applications supply their API's sign-in and, optionally, refresh calls. For generated
+OpenAPI clients, a middleware adds bearer tokens and can refresh and retry a rejected request once
+when its body can be replayed.
 
 ## Building a backend
 

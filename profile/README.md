@@ -52,28 +52,35 @@ operations rely on trusted service peers while enforcing domain invariants.
 requests. Middleware adds bearer tokens and can refresh and retry a rejected request once when
 its body can be replayed. Applications supply their API's login and refresh implementation.
 
+## Building a backend
+
+[swift-microservices-architect](https://github.com/swift-microservices/swift-microservices-architect-skill)
+is an agent skill that teaches coding agents to design, build, and review Swift server backends on
+these packages: gRPC services behind a Hummingbird gateway, one Swift package per service whose
+core imports no driver or transport, Postgres row-level security, mTLS between processes, and
+durable Temporal workflows. Ask for a plan, a service, an endpoint, or a review, and the agent
+answers with the same architecture, names, and code style every time. Its README covers
+installation.
+
 ## CI and delivery
 
-Packages call [swiftlang/github-workflows](https://github.com/swiftlang/github-workflows) directly
-for soundness and tests; swift-persistence-postgres runs its tests beside its own PostgreSQL
-service. [ci](https://github.com/swift-microservices/ci) adds only what swiftlang does not do:
-testing a package whose dependencies include private repositories, building and publishing one image
-per commit, and deploying it to Dokploy by digest, to staging on every push to `main` and to
-production by hand for a commit staging ran.
+Every repository's CI calls [ci](https://github.com/swift-microservices/ci), pinned by commit, and
+nothing else. Its workflows run [swiftlang/github-workflows](https://github.com/swiftlang/github-workflows)
+for soundness and tests, and add what those do not: a PostgreSQL service or private dependencies
+for the tests, a check that products link neither Foundation's full library nor ICU where their
+dependencies allow, and releases versioned from pull request labels. For a service, ci builds one
+image per commit and deploys it to Dokploy, to staging on every push to `main` and to production by
+hand for a commit staging ran.
 
 ## Conventions
 
 - Modern Swift, strict concurrency, and Linux support, including the static Linux SDK.
 - Focused packages keep database drivers, token libraries, and transport frameworks out of domain code.
-- Tagged releases give consumers versioned dependencies.
-- CI tests every package on Swift 6.3, 6.4, and the nightly snapshots, with every workflow and
-  action pinned by commit.
+- Every pull request carries one semver label, and releases follow from them, so consumers depend
+  on versions.
+- CI tests every package on Swift 6.3, 6.4, and the nightly snapshots, on x86_64 and aarch64, with
+  every workflow and action pinned by commit.
 - Public APIs have documentation, and tests cover the behavior each package promises.
-
-## Skills
-
-[swift-microservices skills](https://github.com/swift-microservices/skills) provide guidance for
-architecture, implementation, testing, CI, and deployment of Swift server projects.
 
 ## Contributing
 

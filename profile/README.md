@@ -2,7 +2,7 @@
 
 Packages for running Swift services: microservices or a monolith, over gRPC, HTTP, or both.
 
-They build on grpc-swift 2, Hummingbird, Vapor, PostgresNIO, and swift-operation-context to provide
+They build on grpc-swift 2, Hummingbird, PostgresNIO, and swift-operation-context to provide
 transaction boundaries, credential authentication, and caller identity carried with each call.
 
 Each package has a focused dependency set. A service links only what it uses: gRPC interceptors
@@ -20,7 +20,6 @@ authentication abstractions for domain code.
 | [swift-authentication-jwt](https://github.com/swift-microservices/swift-authentication-jwt) | JWT issuance and verification | jwt-kit |
 | [swift-authentication-grpc](https://github.com/swift-microservices/swift-authentication-grpc) | User bearer authentication and token propagation for gRPC | grpc-swift-2 |
 | [swift-authentication-hummingbird](https://github.com/swift-microservices/swift-authentication-hummingbird) | Authentication middleware for Hummingbird | hummingbird-auth |
-| [swift-authentication-vapor](https://github.com/swift-microservices/swift-authentication-vapor) | Authentication middleware for Vapor | vapor |
 
 ## How they fit
 

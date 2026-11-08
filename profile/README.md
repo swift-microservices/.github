@@ -1,22 +1,17 @@
 # Swift Microservices
 
-Build Swift backends and SwiftUI apps with one consistent approach: open-source packages for
-running services, and agent skills that teach coding agents to design, build, and review both.
+Packages for running Swift services: microservices or a monolith, over gRPC, HTTP, or both, with
+agent skills for building those services and the SwiftUI apps that call them.
 
-| Building | Start with | What you get |
-| --- | --- | --- |
-| A backend | [swift-microservices-architect](https://github.com/swift-microservices/swift-microservices-architect-skill) and the [server packages](#server-packages) | Microservices or a monolith, over gRPC, HTTP, or both |
-| An app | [swiftui-architect](https://github.com/swift-microservices/swiftui-architect-skill) | Modular SwiftUI: one Swift package per feature, with boundaries the compiler enforces |
-
-The server packages build on grpc-swift 2, Hummingbird, PostgresNIO, and swift-operation-context
-to provide transaction boundaries, credential authentication, and caller identity carried with
-each call.
+The packages build on grpc-swift 2, Hummingbird, PostgresNIO, and swift-operation-context to
+provide transaction boundaries, credential authentication, and caller identity carried with each
+call.
 
 Each package has a focused dependency set. A service links only what it uses: gRPC interceptors
 for a gRPC service, HTTP middleware for an HTTP application, and the core persistence and
 authentication abstractions for domain code.
 
-## Server packages
+## Packages
 
 | Package | What it offers | Built on |
 | --- | --- | --- |
@@ -51,26 +46,6 @@ Separate public, user, and internal RPCs keep those boundaries clear: public ope
 their required credentials or proofs, user operations authenticate the caller, and internal
 operations rely on trusted service peers while enforcing domain invariants.
 
-## Building a backend
-
-[swift-microservices-architect](https://github.com/swift-microservices/swift-microservices-architect-skill)
-is an agent skill that teaches coding agents to design, build, and review Swift server backends on
-these packages: gRPC services behind a Hummingbird gateway, one Swift package per service whose
-core imports no driver or transport, Postgres row-level security, mTLS between processes, and
-durable Temporal workflows. Ask for a plan, a service, an endpoint, or a review, and the agent
-answers with the same architecture, names, and code style every time. Its README covers
-installation.
-
-## Building an app
-
-[swiftui-architect](https://github.com/swift-microservices/swiftui-architect-skill) is an agent
-skill that teaches coding agents to design, build, and review modular SwiftUI apps: one Swift
-package per feature, split into domain, UI, and live-service targets whose boundaries the compiler
-enforces, `@Observable` view models under Swift 6 strict concurrency, and native `NavigationStack`
-navigation between features that never import each other. Ask for a feature, a screen, a link
-between two features, a move into packages, or a review, and the agent answers with the same
-structure, names, and shapes every time. Its README covers installation.
-
 ## CI and delivery
 
 Every repository's CI calls [ci](https://github.com/swift-microservices/ci), pinned by commit, and
@@ -95,3 +70,21 @@ hand for a commit staging ran.
 
 Pull requests are welcome on any package. Keep changes focused and cover new behavior with tests.
 See each repository for usage, contribution, and licensing details.
+
+## Agent skills
+
+[swift-microservices-architect](https://github.com/swift-microservices/swift-microservices-architect-skill)
+is an agent skill that teaches coding agents to design, build, and review Swift server backends on
+these packages: gRPC services behind a Hummingbird gateway, one Swift package per service whose
+core imports no driver or transport, Postgres row-level security, mTLS between processes, and
+durable Temporal workflows. Ask for a plan, a service, an endpoint, or a review, and the agent
+answers with the same architecture, names, and code style every time. Its README covers
+installation.
+
+[swiftui-architect](https://github.com/swift-microservices/swiftui-architect-skill) is an agent
+skill that teaches coding agents to design, build, and review modular SwiftUI apps: one Swift
+package per feature, split into domain, UI, and live-service targets whose boundaries the compiler
+enforces, `@Observable` view models under Swift 6 strict concurrency, and native `NavigationStack`
+navigation between features that never import each other. Ask for a feature, a screen, a link
+between two features, a move into packages, or a review, and the agent answers with the same
+structure, names, and shapes every time. Its README covers installation.

@@ -1,15 +1,22 @@
 # Swift Microservices
 
-Packages for running Swift services: microservices or a monolith, over gRPC, HTTP, or both.
+Build Swift backends and SwiftUI apps with one consistent approach: open-source packages for
+running services, and agent skills that teach coding agents to design, build, and review both.
 
-They build on grpc-swift 2, Hummingbird, PostgresNIO, and swift-operation-context to provide
-transaction boundaries, credential authentication, and caller identity carried with each call.
+| Building | Start with | What you get |
+| --- | --- | --- |
+| A backend | [swift-microservices-architect](https://github.com/swift-microservices/swift-microservices-architect-skill) and the [server packages](#server-packages) | Microservices or a monolith, over gRPC, HTTP, or both |
+| An app | [swiftui-architect](https://github.com/swift-microservices/swiftui-architect-skill) | Modular SwiftUI: one Swift package per feature, with boundaries the compiler enforces |
+
+The server packages build on grpc-swift 2, Hummingbird, PostgresNIO, and swift-operation-context
+to provide transaction boundaries, credential authentication, and caller identity carried with
+each call.
 
 Each package has a focused dependency set. A service links only what it uses: gRPC interceptors
 for a gRPC service, HTTP middleware for an HTTP application, and the core persistence and
 authentication abstractions for domain code.
 
-## Packages
+## Server packages
 
 | Package | What it offers | Built on |
 | --- | --- | --- |
@@ -76,7 +83,7 @@ hand for a commit staging ran.
 
 ## Conventions
 
-- Modern Swift, strict concurrency, and Linux support, including the static Linux SDK.
+- Packages use modern Swift and strict concurrency, and support Linux, including the static Linux SDK.
 - Focused packages keep database drivers, token libraries, and transport frameworks out of domain code.
 - Every pull request carries one semver label, and releases follow from them, so consumers depend
   on versions.
